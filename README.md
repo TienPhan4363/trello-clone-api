@@ -42,3 +42,8 @@ You don’t have to ever use `eject`. The curated feature set is suitable for sm
 # Packages
 expressjs
 eslint
+nodemon
+babel 
+- babel-plugin-module-resolver
+- npm install --save-dev @babel/core @babel/cli @babel/node @babel/preset-env @babel/plugin-transform-runtime
+- npm install --save @babel/runtime
