@@ -44,3 +44,9 @@ expressjs
 eslint
 mongoDB - mongoDB cluster, mongoDB connection nodejs
 dotenv
+
+nodemon
+babel 
+- babel-plugin-module-resolver
+- npm install --save-dev @babel/core @babel/cli @babel/node @babel/preset-env @babel/plugin-transform-runtime
+- npm install --save @babel/runtime

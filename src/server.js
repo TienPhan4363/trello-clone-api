@@ -9,9 +9,10 @@ const port = env.PORT;
 connectDB().catch(console.log);
 
 app.get('/', (req, res) => {
-    res.end('<h1>Hello world!</h1>');
+    res.end('<h1>Hello worldfddddddddddddd!</h1>');
 });
 
 app.listen(port, hostname, () => {
+    // eslint-disable-next-line no-console
     console.log(`Hello, Im running at ${hostname}:${port}/`);
 });
