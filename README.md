@@ -42,6 +42,9 @@ You don’t have to ever use `eject`. The curated feature set is suitable for sm
 # Packages
 expressjs
 eslint
+mongoDB - mongoDB cluster, mongoDB connection nodejs
+dotenv
+
 nodemon
 babel 
 - babel-plugin-module-resolver

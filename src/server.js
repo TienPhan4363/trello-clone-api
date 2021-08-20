@@ -1,10 +1,12 @@
 import express from 'express';
-// eslint-disable-next-line no-unused-vars
-import { mapOrder } from '*/utilities/sorts.js';
+import { connectDB } from './config/mongoDB.js';
+import { env } from './config/environment.js';
 
 const app = express();
-const hostname = 'localhost';
-const port = 4363;
+const hostname = env.HOST_NAME;
+const port = env.PORT;
+
+connectDB().catch(console.log);
 
 app.get('/', (req, res) => {
     res.end('<h1>Hello worldfddddddddddddd!</h1>');
