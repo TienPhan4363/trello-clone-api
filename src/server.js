@@ -1,6 +1,7 @@
 import express from 'express';
 import { connectDB } from './config/mongoDB.js';
 import { env } from './config/environment.js';
+import { apiV1 } from './routes/v1';
 
 connectDB()
     .then( () => console.log('Connected success to database server'))
@@ -12,9 +13,12 @@ connectDB()
 
 const bootServer = () => {
     const app = express();
-    app.get('/', async (req, res) => {
-        res.end('<h1>Hello worldfddddddddddddd!</h1>');
-    });
+
+    //enable req.body data
+    app.use(express.json());
+
+    //use apiV1
+    app.use('/v1', apiV1);
 
     app.listen(env.APP_PORT, env.APP_HOST, () => {
         // eslint-disable-next-line no-console
