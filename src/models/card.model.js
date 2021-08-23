@@ -1,11 +1,12 @@
 import Joi from 'joi';
+import { ObjectId } from 'mongodb';
 import { getDB } from '../config/mongoDB';
 
 //define Card collection
 const cardCollectionName = 'cards';
 const cardCollectionShema = Joi.object({
-    boardID: Joi.string().required(),
-    columnID: Joi.string().required(),
+    boardID: Joi.string().required(), //also ObjectId when create new
+    columnID: Joi.string().required(), //also ObjectId when create new
     title: Joi.string().required().min(3).max(50).trim(),
     cover: Joi.string().default(null),
     createdAt: Joi.date().timestamp().default(Date.now()),
@@ -20,13 +21,21 @@ const validateSchema = async (data) => {
 
 const createNew = async (data) => {
     try {
-        console.log(data);
-        const value = await validateSchema(data);
-        const result = await getDB().collection(cardCollectionName).insertOne(value);
+        const validatedValue = await validateSchema(data);
+        const insertValue = {
+            ...validatedValue,
+            boardID: ObjectId(validatedValue.boardID),
+            columnID: ObjectId(validatedValue.columnID)
+        };
+        const result = await getDB().collection(cardCollectionName).insertOne(insertValue);
+
         return await getDB().collection(cardCollectionName).findOne(result.insertedId);
     } catch (error) {
         throw new Error(error);
     }
 };
 
-export const CardModel = { createNew };
+export const CardModel = {
+    cardCollectionName,
+    createNew
+};

@@ -1,14 +1,14 @@
 //Service handle logic and then send to controller
 import { CardModel } from '../models/card.model';
+import { ColumnModel } from '../models/column.model';
 
 //createNew
 const createNew = async (data) => {
     try {
-        const result = await CardModel.createNew(data);
-        //push notification
-        //do something...
-        //transform data..
-        return result;
+        const newCard = await CardModel.createNew(data);
+        await ColumnModel.pushCardOrder(newCard.columnID.toString(), newCard._id.toString());
+
+        return newCard;
     } catch (error) {
         throw new Error(error);//throw for controller to catch
     }
