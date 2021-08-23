@@ -32,14 +32,14 @@ const createNew = async (data) => {
 
 //pushColumnOrder
 /**
- * @param {string} boardID
- * @param {string} columnID
+ * @param {string} boardId
+ * @param {string} columnId
  */
-const pushColumnOrder = async (boardID, columnID) => {
+const pushColumnOrder = async (boardId, columnId) => {
     try {
         const result = await getDB().collection(boardCollectionName).findOneAndUpdate(
-            { _id: ObjectId(boardID) },
-            { $push: { columnOrder: columnID } },
+            { _id: ObjectId(boardId) },
+            { $push: { columnOrder: columnId } },
             { returnOriginal: false }//return collection after update, not origin collection
         );
         return result.value;
@@ -49,12 +49,12 @@ const pushColumnOrder = async (boardID, columnID) => {
 };
 
 //getFullBoard
-const getFullBoard = async (boardID) => {
+const getFullBoard = async (boardId) => {
     try {
         const result = await getDB().collection(boardCollectionName).aggregate([
             {
                 $match: {
-                    _id: ObjectId(boardID)
+                    _id: ObjectId(boardId)
                 }
             },
             // {
@@ -66,7 +66,7 @@ const getFullBoard = async (boardID) => {
                 $lookup: {
                     from: ColumnModel.columnCollectionName,
                     localField: '_id',
-                    foreignField: 'boardID',
+                    foreignField: 'boardId',
                     as: 'columns'
                 }
             },
@@ -74,7 +74,7 @@ const getFullBoard = async (boardID) => {
                 $lookup: {
                     from: CardModel.cardCollectionName,
                     localField: '_id',
-                    foreignField: 'boardID',
+                    foreignField: 'boardId',
                     as: 'cards'
                 }
             }
