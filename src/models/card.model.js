@@ -5,8 +5,8 @@ import { getDB } from '../config/mongoDB';
 //define Card collection
 const cardCollectionName = 'cards';
 const cardCollectionShema = Joi.object({
-    boardID: Joi.string().required(), //also ObjectId when create new
-    columnID: Joi.string().required(), //also ObjectId when create new
+    boardId: Joi.string().required(), //also ObjectId when create new
+    columnId: Joi.string().required(), //also ObjectId when create new
     title: Joi.string().required().min(3).max(50).trim(),
     cover: Joi.string().default(null),
     createdAt: Joi.date().timestamp().default(Date.now()),
@@ -24,8 +24,8 @@ const createNew = async (data) => {
         const validatedValue = await validateSchema(data);
         const insertValue = {
             ...validatedValue,
-            boardID: ObjectId(validatedValue.boardID),
-            columnID: ObjectId(validatedValue.columnID)
+            boardId: ObjectId(validatedValue.boardId),
+            columnId: ObjectId(validatedValue.columnId)
         };
         const result = await getDB().collection(cardCollectionName).insertOne(insertValue);
 
