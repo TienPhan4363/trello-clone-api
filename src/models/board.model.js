@@ -1,5 +1,8 @@
 import Joi from 'joi';
 import { getDB } from '../config/mongoDB';
+import { ObjectId } from 'mongodb';
+import { ColumnModel } from './column.model';
+import { CardModel } from './card.model';
 
 //define Board collection
 const boardCollectionName = 'boards';
@@ -16,6 +19,7 @@ const validateSchema = async (data) => {
     return await boardCollectionShema.validateAsync(data, { abortEarly: false });
 };
 
+//createNew
 const createNew = async (data) => {
     try {
         const value = await validateSchema(data);
@@ -26,4 +30,64 @@ const createNew = async (data) => {
     }
 };
 
-export const BoardModel = { createNew };
+//pushColumnOrder
+/**
+ * @param {string} boardID
+ * @param {string} columnID
+ */
+const pushColumnOrder = async (boardID, columnID) => {
+    try {
+        const result = await getDB().collection(boardCollectionName).findOneAndUpdate(
+            { _id: ObjectId(boardID) },
+            { $push: { columnOrder: columnID } },
+            { returnOriginal: false }//return collection after update, not origin collection
+        );
+        return result.value;
+    } catch (error) {
+        throw new Error(error);//throw for service to catch
+    }
+};
+
+//getFullBoard
+const getFullBoard = async (boardID) => {
+    try {
+        const result = await getDB().collection(boardCollectionName).aggregate([
+            {
+                $match: {
+                    _id: ObjectId(boardID)
+                }
+            },
+            // {
+            //     $addFields: {
+            //         _id: { $toString: '$_id' }//override _id from string to ObjectId
+            //     }
+            // },
+            {
+                $lookup: {
+                    from: ColumnModel.columnCollectionName,
+                    localField: '_id',
+                    foreignField: 'boardID',
+                    as: 'columns'
+                }
+            },
+            {
+                $lookup: {
+                    from: CardModel.cardCollectionName,
+                    localField: '_id',
+                    foreignField: 'boardID',
+                    as: 'cards'
+                }
+            }
+        ]).toArray();
+
+        return result[0] || {};
+    } catch (error) {
+        throw new Error(error);//throw for service to catch
+    }
+};
+
+export const BoardModel = {
+    createNew,
+    pushColumnOrder,
+    getFullBoard
+};

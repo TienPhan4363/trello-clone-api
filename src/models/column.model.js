@@ -5,7 +5,7 @@ import { getDB } from '../config/mongoDB';
 //define Column collection
 const columnCollectionName = 'columns';
 const columnCollectionShema = Joi.object({
-    boardID: Joi.string().required(),
+    boardID: Joi.string().required(), //also ObjectId when create new
     title: Joi.string().required().min(3).max(20).trim(),
     cardOrder: Joi.array().items(Joi.string()).default([]),
     createdAt: Joi.date().timestamp().default(Date.now()),
@@ -21,11 +21,34 @@ const validateSchema = async (data) => {
 //createNew
 const createNew = async (data) => {
     try {
-        const value = await validateSchema(data);
-        const result = await getDB().collection(columnCollectionName).insertOne(value);
+        const validatedValue = await validateSchema(data);
+        const insertValue = {
+            ...validatedValue,
+            boardID: ObjectId(validatedValue.boardID)
+        };
+        const result = await getDB().collection(columnCollectionName).insertOne(insertValue);
+
         return await getDB().collection(columnCollectionName).findOne(result.insertedId);
     } catch (error) {
         throw new Error(error);
+    }
+};
+
+//pushColumnOrder
+/**
+ * @param {string} columnId
+ * @param {string} cardID
+ */
+const pushCardOrder = async (columnID, cardID) => {
+    try {
+        const result = await getDB().collection(columnCollectionName).findOneAndUpdate(
+            { _id: ObjectId(columnID) },
+            { $push: { cardOrder: cardID } },
+            { returnOriginal: false }//return collection after update, not origin collection
+        );
+        return result.value;
+    } catch (error) {
+        throw new Error(error);//throw for service to catch
     }
 };
 
@@ -45,6 +68,8 @@ const update = async (id, data) => {
 };
 
 export const ColumnModel = {
+    columnCollectionName,
     createNew,
+    pushCardOrder,
     update
 };
