@@ -54,7 +54,8 @@ const getFullBoard = async (boardId) => {
         const result = await getDB().collection(boardCollectionName).aggregate([
             {
                 $match: {
-                    _id: ObjectId(boardId)
+                    _id: ObjectId(boardId),
+                    _destroy: false
                 }
             },
             // {
@@ -62,21 +63,17 @@ const getFullBoard = async (boardId) => {
             //         _id: { $toString: '$_id' }//override _id from string to ObjectId
             //     }
             // },
-            {
-                $lookup: {
-                    from: ColumnModel.columnCollectionName,
-                    localField: '_id',
-                    foreignField: 'boardId',
-                    as: 'columns'
-                }
+            { $lookup: {
+                from: ColumnModel.columnCollectionName,
+                localField: '_id',
+                foreignField: 'boardId',
+                as: 'columns' }
             },
-            {
-                $lookup: {
-                    from: CardModel.cardCollectionName,
-                    localField: '_id',
-                    foreignField: 'boardId',
-                    as: 'cards'
-                }
+            { $lookup: {
+                from: CardModel.cardCollectionName,
+                localField: '_id',
+                foreignField: 'boardId',
+                as: 'cards' }
             }
         ]).toArray();
 

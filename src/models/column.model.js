@@ -56,12 +56,19 @@ const pushCardOrder = async (columnId, cardId) => {
 const update = async (id, data) => {
     try {
         //mongodb db.collection.prototype
-        const result = await getDB().collection(columnCollectionName).findOneAndUpdate(
+        const updateData = {
+            ...data,
+            boardId: ObjectId(data.boardId)
+        };
+        let result = await getDB().collection(columnCollectionName).findOneAndUpdate(
             { _id: ObjectId(id) },
-            { $set: data },
-            { returnOriginal: false }//return collection after update, not origin collection
+            { $set: updateData },
+            {
+                returnOriginal: false
+            }//return collection after update, not origin collection
         );
-        return result.value;
+        result = await getDB().collection(columnCollectionName).findOne({ _id: ObjectId(id) });
+        return result;
     } catch (error) {
         throw new Error(error);
     }
