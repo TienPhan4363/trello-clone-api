@@ -15,4 +15,28 @@ const createNew = async (req, res, next) => {
     }
 };
 
-export const boardValidation = { createNew };
+//update
+const update = async (req, res, next) => {
+    const condition = Joi.object({
+        title: Joi.string().min(3).max(20).trim(),
+        columnOrder: Joi.array().items(Joi.string())
+    });
+    try {
+        await condition.validateAsync(req.body,
+            {
+                abortEarly: false,
+                //if not update title but update cardOrder for example, this properties allow you to do so, as cardOrder was not defined in condition
+                allowUnknown: true
+            });
+        next();
+    } catch (error) {
+        res.status(HttpStatusCode.BAD_REQUEST).json({
+            errors: new Error(error).message
+        });
+    }
+};
+
+export const boardValidation = {
+    createNew,
+    update
+};

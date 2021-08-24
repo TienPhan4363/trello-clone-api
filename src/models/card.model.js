@@ -34,6 +34,32 @@ const createNew = async (data) => {
         throw new Error(error);
     }
 };
+
+//update
+const update = async (id, data) => {
+    try {
+        //mongodb db.collection.prototype
+        const updateData = { ...data };
+        //transform  board string id into ObjectId(boardId)
+        if (data.boardId) updateData.boardId = ObjectId(data.boardId);
+
+        //transform  column string id into ObjectId(columnId)
+        if (data.columnId) updateData.columnId = ObjectId(data.columnId);
+
+        let result = await getDB().collection(cardCollectionName).findOneAndUpdate(
+            { _id: ObjectId(id) },
+            { $set: updateData },
+            {
+                returnOriginal: false
+            }//return collection after update, not origin collection
+        );
+        result = await getDB().collection(cardCollectionName).findOne({ _id: ObjectId(id) });
+        return result;
+    } catch (error) {
+        throw new Error(error);
+    }
+};
+
 /**
  * @param {Array of card id} ids
  */
@@ -54,5 +80,6 @@ const deleteManyCard = async (ids) => {
 export const CardModel = {
     cardCollectionName,
     createNew,
-    deleteManyCard
+    deleteManyCard,
+    update
 };
